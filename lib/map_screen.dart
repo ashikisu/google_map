@@ -43,7 +43,7 @@ class _MapScreenState extends State<MapScreen> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
-        title: Text('Real Time Location'),
+        title:const  Text('Real Time Location'),
         centerTitle: true,
       ),
       body:currentLoc==null?
@@ -52,19 +52,19 @@ class _MapScreenState extends State<MapScreen> {
           : GoogleMap(
         onMapCreated: ((GoogleMapController controller)=>
           gMapController.complete(controller)),
-        initialCameraPosition:CameraPosition(
+        initialCameraPosition:const CameraPosition(
             target: uttara,
         zoom: 16        ),
       markers: {
-        Marker(markerId: MarkerId("currentLocation"),
+        Marker(markerId: const MarkerId("currentLocation"),
           icon: BitmapDescriptor.defaultMarker,
           position: currentLoc!,
         ),
-          Marker(markerId: MarkerId("sourceLocation"),
+          const Marker(markerId: MarkerId("sourceLocation"),
               icon: BitmapDescriptor.defaultMarker,
             position: uttara,
           ),
-        Marker(markerId: MarkerId("destinationLocation"),
+        const Marker(markerId: MarkerId("destinationLocation"),
               icon: BitmapDescriptor.defaultMarker,
             position: dhanmondi,
           )
@@ -126,7 +126,7 @@ class _MapScreenState extends State<MapScreen> {
 
   }
   void generatePolyLineFromPoin(List<LatLng> polyLineCoordinates)async{
-    PolylineId id=PolylineId("poly");
+    PolylineId id=const PolylineId("poly");
     Polyline polyline=Polyline(
         polylineId:id,
         color: Colors.black,
