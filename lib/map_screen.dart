@@ -7,6 +7,8 @@ import "package:google_maps_flutter/google_maps_flutter.dart";
 import "package:location/location.dart";
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
+import "const.dart";
+
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
 
@@ -22,11 +24,17 @@ class _MapScreenState extends State<MapScreen> {
   static const LatLng uttara= LatLng(23.8759,90.3795);
   static const LatLng dhanmondi= LatLng(23.7461, 90.3742);
   LatLng? currentLoc= null;
+  Map<PolylineId, Polyline> polylines={};
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getLocationUpdates();
+    getLocationUpdates().then((_) =>{
+      getPolyLinePoints().then((coordinates) => {
+        generatePolyLineFromPoin(coordinates),
+      }),
+    },);
   }
 
   @override
@@ -60,7 +68,8 @@ class _MapScreenState extends State<MapScreen> {
               icon: BitmapDescriptor.defaultMarker,
             position: dhanmondi,
           )
-        }
+        },
+        polylines:Set<Polyline>.of(polylines.values) ,
 
       ),
 
@@ -97,5 +106,35 @@ class _MapScreenState extends State<MapScreen> {
        }
      });
   }
-  Future<Lis>
+  Future<List<LatLng>>getPolyLinePoints() async{
+    List<LatLng> polyLineCoordinates=[];
+    PolylinePoints polylinePoints = PolylinePoints();
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+        GOOGLE_MAPS_API_KEY,
+        PointLatLng(uttara.latitude, uttara.longitude),
+        PointLatLng(dhanmondi.latitude, dhanmondi.longitude),
+        travelMode: TravelMode.driving,
+    );
+    if(result.points.isNotEmpty){
+      result.points.forEach((PointLatLng point) { 
+        polyLineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    }else{
+      print(result.errorMessage);
+    }
+    return polyLineCoordinates;
+
+  }
+  void generatePolyLineFromPoin(List<LatLng> polyLineCoordinates)async{
+    PolylineId id=PolylineId("poly");
+    Polyline polyline=Polyline(
+        polylineId:id,
+        color: Colors.black,
+        points: polyLineCoordinates,
+        width: 8
+     );
+    setState(() {
+      polylines[id]=polyline;
+    });
+  }
 }
